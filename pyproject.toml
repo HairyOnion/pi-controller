@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pi-touch-controller"
+version = "0.1.0"
+description = "Raspberry Pi touchscreen controller for Windows agent"
+requires-python = ">=3.11"
+dependencies = [
+  "PySide6",
+  "requests",
+]
+
+[tool.setuptools]
+packages = ["app"]

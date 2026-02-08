@@ -1,0 +1,17 @@
+[Unit]
+Description=Pi Touch Controller
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/pi_touch_controller
+ExecStart=/usr/bin/python3 -m app.main
+Restart=always
+RestartSec=2
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=-/etc/pi-touch-controller.env
+
+[Install]
+WantedBy=multi-user.target
