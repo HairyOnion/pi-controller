@@ -55,6 +55,9 @@ This document is the authoritative design contract for the Raspberry Pi Touch Co
 - Control styling is defined by `style_bg`, `style_fg`, `icon_path`, and size hints.
 - Global theme values are defined in `settings` (font family, font size, colors, spacing, button radius, slider groove/handle, accent).
 - Styling must not be hard-coded in the UI beyond generic widget defaults.
+- Buttons may define a background SVG via `button_svg_path`.
+- Sliders may define a track SVG via `slider_track_path` and a knob SVG via `slider_knob_path`.
+- SVG assets must scale to the rendered control size; rasterized caches are allowed for performance.
 
 ## Settings Screen (Required)
 The settings screen must include the following operator-editable settings:

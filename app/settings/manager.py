@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from ..data.db import Database
 from ..data.repository import Repository
 
+MIN_BRIGHTNESS_PERCENT = 20
+
 
 @dataclass
 class AgentTarget:
@@ -30,7 +32,13 @@ class SettingsManager:
 
     def get_brightness(self) -> int:
         value = self._repo.get_setting("brightness")
-        return int(value.value) if value and value.value else 80
+        if not value or not value.value:
+            return 80
+        try:
+            parsed = int(value.value)
+        except ValueError:
+            return 80
+        return max(MIN_BRIGHTNESS_PERCENT, min(100, parsed))
 
     def set_setting(self, key: str, value: str) -> None:
         self._repo.set_setting(key, value)
@@ -70,10 +78,10 @@ class SettingsManager:
         if key == "brightness":
             try:
                 v = int(normalized)
-                if v < 0 or v > 100:
+                if v < MIN_BRIGHTNESS_PERCENT or v > 100:
                     raise ValueError()
             except ValueError:
-                return False, value, "Brightness must be 0-100"
+                return False, value, f"Brightness must be {MIN_BRIGHTNESS_PERCENT}-100"
             self._repo.set_setting(key, str(v))
             return True, str(v), None
         if key == "theme_font_size":

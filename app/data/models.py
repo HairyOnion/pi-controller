@@ -37,6 +37,9 @@ class Control:
     height_hint: Optional[int]
     setting_key: Optional[str]
     placeholder_text: Optional[str]
+    button_svg_path: Optional[str]
+    slider_track_path: Optional[str]
+    slider_knob_path: Optional[str]
 
 
 @dataclass(frozen=True)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 
 from PySide6 import QtCore, QtWidgets
@@ -18,15 +19,23 @@ class AppWindow:
         self._settings = settings
         self._dispatcher = dispatcher
 
+        if not sys.platform.startswith("win"):
+            # linuxfb on Pi can inherit non-1x scaling; force 1:1 logical pixels.
+            os.environ.setdefault("QT_ENABLE_HIGHDPI_SCALING", "0")
+            os.environ.setdefault("QT_AUTO_SCREEN_SCALE_FACTOR", "0")
+            os.environ.setdefault("QT_SCALE_FACTOR", "1")
+            os.environ.setdefault("QT_FONT_DPI", "96")
+
         self._app = QtWidgets.QApplication([])
         self._window = QtWidgets.QMainWindow()
         self._window.setWindowTitle("Pi Touch Controller")
+        self._window.setContentsMargins(0, 0, 0, 0)
         if sys.platform.startswith("win"):
             self._window.setWindowFlag(Qt.FramelessWindowHint, False)
             self._configure_windowed_mode()
         else:
             self._window.setWindowFlag(Qt.FramelessWindowHint, True)
-            self._window.showFullScreen()
+            self._configure_fullscreen_mode()
 
         self._renderer = ScreenRenderer(db=self._db, dispatcher=self._dispatcher)
         self._overlay = StatusOverlay(self._window)
@@ -46,7 +55,10 @@ class AppWindow:
         self._health_timer.start()
 
     def run(self) -> None:
-        self._window.show()
+        if sys.platform.startswith("win"):
+            self._window.show()
+        else:
+            self._window.showFullScreen()
         self._app.exec()
 
     def _configure_windowed_mode(self) -> None:
@@ -78,3 +90,9 @@ class AppWindow:
             self._overlay.clear()
         else:
             self._overlay.set_error("Agent Offline")
+
+    def _configure_fullscreen_mode(self) -> None:
+        screen = QtWidgets.QApplication.primaryScreen()
+        if not screen:
+            return
+        self._window.setGeometry(screen.geometry())

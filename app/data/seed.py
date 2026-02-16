@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 from .db import Database
 from .repository import Repository
 
 
 def main() -> None:
-    db_path = os.environ.get("PI_TC_DB", "/home/pi/pi_touch_controller/app.db")
+    db_path = os.environ.get("PI_TC_DB", str(Path.home() / "pi_controller" / "app.db"))
     db = Database(db_path)
     db.reset()
     db.migrate()

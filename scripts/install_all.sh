@@ -2,7 +2,9 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-DB_PATH="${PI_TC_DB:-/home/pi/pi_touch_controller/app.db}"
+APP_USER="${PI_TC_USER:-hairyonion}"
+APP_HOME="/home/$APP_USER"
+DB_PATH="${PI_TC_DB:-$APP_HOME/pi_controller/app.db}"
 
 echo "Installing Python dependencies..."
 python3 -m pip install -e "$ROOT_DIR"
@@ -25,8 +27,8 @@ sudo cp "$ROOT_DIR/systemd/90-backlight.rules" /etc/udev/rules.d/90-backlight.ru
 sudo udevadm control --reload-rules
 sudo udevadm trigger
 
-if id -u pi >/dev/null 2>&1; then
-  sudo usermod -aG video pi
+if id -u "$APP_USER" >/dev/null 2>&1; then
+  sudo usermod -aG video "$APP_USER"
 fi
 
 echo "Enabling service..."

@@ -24,9 +24,22 @@ class Database:
             current = int(row[0]) if row else 0
             for version, sql in MIGRATIONS:
                 if version > current:
-                    conn.executescript(sql)
+                    if version == 5:
+                        self._ensure_control_svg_columns(conn)
+                    elif sql.strip():
+                        conn.executescript(sql)
                     conn.execute("INSERT INTO schema_version (version) VALUES (?)", (version,))
             conn.commit()
+
+    def _ensure_control_svg_columns(self, conn: sqlite3.Connection) -> None:
+        rows = conn.execute("PRAGMA table_info(controls);").fetchall()
+        columns = {row[1] for row in rows}
+        if "button_svg_path" not in columns:
+            conn.execute("ALTER TABLE controls ADD COLUMN button_svg_path TEXT;")
+        if "slider_track_path" not in columns:
+            conn.execute("ALTER TABLE controls ADD COLUMN slider_track_path TEXT;")
+        if "slider_knob_path" not in columns:
+            conn.execute("ALTER TABLE controls ADD COLUMN slider_knob_path TEXT;")
 
     def reset(self) -> None:
         with self.connect() as conn:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import threading
 from queue import Queue
 
@@ -8,6 +9,8 @@ from .client import AgentClient
 import time
 from .mapping import action_to_agent_payload, build_request_id
 from ..data.models import Action
+
+logger = logging.getLogger(__name__)
 
 
 class ActionDispatcher:
@@ -22,6 +25,7 @@ class ActionDispatcher:
         self._health_thread.start()
 
     def enqueue(self, action: dict) -> None:
+        logger.info("Enqueue raw action: action=%s", action.get("action"))
         self._queue.put(action)
 
     def enqueue_action_record(
@@ -34,6 +38,14 @@ class ActionDispatcher:
             action,
             request_id=request_id or build_request_id(),
             context=context,
+        )
+        logger.info(
+            "Enqueue action record: id=%s type=%s trigger=%s mapped_action=%s request_id=%s",
+            action.id,
+            action.action_type,
+            action.trigger,
+            payload.get("action"),
+            payload.get("request_id"),
         )
         self._queue.put(payload)
 
@@ -48,7 +60,17 @@ class ActionDispatcher:
             if delay:
                 time.sleep(delay)
             if self._client.send(action):
+                logger.info(
+                    "Dispatched action: action=%s request_id=%s",
+                    action.get("action"),
+                    action.get("request_id"),
+                )
                 return
+        logger.error(
+            "Failed to dispatch action after retries: action=%s request_id=%s",
+            action.get("action"),
+            action.get("request_id"),
+        )
 
     def _health_loop(self) -> None:
         while True:
