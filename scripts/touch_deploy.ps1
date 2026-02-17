@@ -223,6 +223,13 @@ function Invoke-RemotePostDeploy {
 
     $needsSystemdReload = $copiedSet.Contains("systemd/pi-touch-controller.service")
     $needsBacklightRuleApply = $copiedSet.Contains("systemd/90-backlight.rules")
+    $needsScriptFixup = $false
+    foreach ($path in $CopiedSet) {
+        if ($path.StartsWith("scripts/", [System.StringComparison]::OrdinalIgnoreCase) -and $path.EndsWith(".sh", [System.StringComparison]::OrdinalIgnoreCase)) {
+            $needsScriptFixup = $true
+            break
+        }
+    }
     $needsReboot = $false
     foreach ($path in $CopiedSet) {
         if (
@@ -245,6 +252,10 @@ function Invoke-RemotePostDeploy {
         $parts.Add("sudo cp systemd/90-backlight.rules /etc/udev/rules.d/90-backlight.rules")
         $parts.Add("sudo udevadm control --reload-rules")
         $parts.Add("sudo udevadm trigger")
+    }
+    if ($needsScriptFixup) {
+        $parts.Add("find scripts -maxdepth 1 -type f -name '*.sh' -exec sed -i 's/\r$//' {} +")
+        $parts.Add("find scripts -maxdepth 1 -type f -name '*.sh' -exec chmod +x {} +")
     }
     if ($InstallPythonDeps) {
         $parts.Add("python3 -m pip install -e .")

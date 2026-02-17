@@ -14,6 +14,9 @@ class SvgBackgroundButton(QtWidgets.QPushButton):
         super().__init__(label, parent)
         self._svg_path = svg_path
         self._cache = cache
+        self.setFlat(True)
+        self.setAutoFillBackground(False)
+        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_TranslucentBackground, True)
         self.setStyleSheet("QPushButton { background: transparent; border: none; }")
 
     def set_svg_background(self, path: Path | None) -> None:

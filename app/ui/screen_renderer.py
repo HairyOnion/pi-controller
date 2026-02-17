@@ -111,6 +111,10 @@ class ScreenRenderer:
         if is_main_screen and max_row >= 1:
             grid.setRowStretch(0, 1)
             grid.setRowStretch(1, 4)
+        elif screen.id == 2:
+            # Keep System-screen controls confined to a top action bar (~20% height).
+            grid.setRowStretch(0, 1)
+            grid.setRowStretch(max_row + 1, 4)
 
         if max_row >= 5:
             scroll = QtWidgets.QScrollArea()
@@ -379,14 +383,20 @@ class ScreenRenderer:
     def _handle_pi_power(self, mode: str) -> None:
         if mode == "restart":
             attempts = [
+                ["sudo", "-n", "systemctl", "reboot"],
+                ["sudo", "-n", "shutdown", "-r", "now"],
                 ["systemctl", "reboot"],
                 ["shutdown", "-r", "now"],
+                ["reboot"],
             ]
             requested = "Pi restart requested"
         else:
             attempts = [
+                ["sudo", "-n", "systemctl", "poweroff"],
+                ["sudo", "-n", "shutdown", "-h", "now"],
                 ["systemctl", "poweroff"],
                 ["shutdown", "-h", "now"],
+                ["poweroff"],
             ]
             requested = "Pi shutdown requested"
 
@@ -431,7 +441,12 @@ class ScreenRenderer:
         if control.style_fg:
             styles.append(f"color: {control.style_fg};")
         if isinstance(widget, QtWidgets.QPushButton):
-            styles.append("border: 2px solid transparent;")
+            if isinstance(widget, SvgBackgroundButton):
+                styles.append("background-color: transparent;")
+                styles.append("background: transparent;")
+                styles.append("border: none;")
+            else:
+                styles.append("border: 2px solid transparent;")
             styles.append(f"padding: {'4px' if self._small_display else '6px'};")
             styles.append(f"font-size: {'14px' if self._small_display else '18px'};")
             styles.append(f"border-radius: {self._theme_button_radius}px;")
@@ -441,7 +456,7 @@ class ScreenRenderer:
             base = " ".join(styles)
             if widget.isCheckable():
                 widget.setStyleSheet(
-                    f"QPushButton {{ {base} }} QPushButton:checked {{ border-color: #f59e0b; }}"
+                    f"QPushButton {{ {base} }} QPushButton:checked {{ border-color: #f59e0b; background: transparent; }}"
                 )
             else:
                 widget.setStyleSheet(f"QPushButton {{ {base} }}")

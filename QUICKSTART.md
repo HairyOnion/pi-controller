@@ -37,6 +37,12 @@ sudo systemctl status pi-touch-controller.service
 sudo systemctl restart pi-touch-controller.service
 ```
 
+8. Enable reboot/shutdown button permissions (one-time on Pi):
+```bash
+./scripts/install_power_permissions.sh
+sudo systemctl restart pi-touch-controller.service
+```
+
 ## Fresh Install Validation Checklist
 After install/reboot, verify in this order:
 
@@ -116,3 +122,14 @@ Behavior:
 - Restarts `pi-touch-controller.service` after deploy by default.
 - Runs `daemon-reload` automatically if `systemd/pi-touch-controller.service` changed.
 - Reboots only when reboot-required files are deployed (or if explicitly allowed with `-AllowReboot`).
+
+## Apply DB UI Tweaks (Windows)
+To apply the requested button text/layout changes to an existing DB:
+```powershell
+python .\scripts\update_ui_layout_and_style_windows.py
+```
+
+Optional explicit DB path:
+```powershell
+python .\scripts\update_ui_layout_and_style_windows.py --db C:\path\to\app.db
+```

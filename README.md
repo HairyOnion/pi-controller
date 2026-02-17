@@ -43,6 +43,10 @@ Touch calibration:
 
 One-step install:
 - Run `scripts/install_all.sh` to install the service, env file, and backlight permissions.
+- `install_all.sh` also installs power-command permissions for Restart/Shutdown buttons.
+
+DB update helper (Windows):
+- `python scripts/update_ui_layout_and_style_windows.py` applies the latest System-screen layout and green-button text updates to existing DBs.
 
 ## Windows Agent Reachability
 - The Windows agent must listen on LAN, not only localhost.

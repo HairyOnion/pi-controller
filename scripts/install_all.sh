@@ -27,6 +27,9 @@ sudo cp "$ROOT_DIR/systemd/90-backlight.rules" /etc/udev/rules.d/90-backlight.ru
 sudo udevadm control --reload-rules
 sudo udevadm trigger
 
+echo "Installing power command permissions..."
+"$ROOT_DIR/scripts/install_power_permissions.sh"
+
 if id -u "$APP_USER" >/dev/null 2>&1; then
   sudo usermod -aG video "$APP_USER"
 fi

@@ -58,6 +58,12 @@ chmod +x ./scripts/install_backlight_permissions.sh
 ./scripts/install_backlight_permissions.sh
 ```
 
+7) Install power button permissions (one-time):
+```bash
+chmod +x ./scripts/install_power_permissions.sh
+./scripts/install_power_permissions.sh
+```
+
 ## Keyboard Input
 - Settings text fields use an internal touch keyboard dialog.
 - Tap a text field (Agent Host/Port/Token, Theme text fields), enter value, then press `Save`.
@@ -155,6 +161,11 @@ Notes:
 - Restarts `pi-touch-controller.service` automatically by default.
 - Reboot is only attempted for reboot-required file changes and only with `-AllowReboot`.
 
+Apply UI DB tweaks from Windows (for existing DB):
+```powershell
+python .\scripts\update_ui_layout_and_style_windows.py
+```
+
 ## Database Location
 Default DB path:
 ```
@@ -186,6 +197,9 @@ PI_TC_DB=/path/to/app.db python3 -m app.data.seed
   - if missing, install: `python3 -m pip install -e .`
   - restart service: `sudo systemctl restart pi-touch-controller.service`
   - inspect logs: `sudo journalctl -u pi-touch-controller.service -n 120 --no-pager`
+- **Restart/Shutdown buttons do nothing**:
+  - install sudoers permissions: `./scripts/install_power_permissions.sh`
+  - restart service: `sudo systemctl restart pi-touch-controller.service`
 
 ## Notes
 - The Pi app does not expose any remote server. It only sends outbound HTTP requests.
