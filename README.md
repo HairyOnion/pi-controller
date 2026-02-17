@@ -20,6 +20,13 @@ Data-driven touchscreen controller for a Windows automation agent. The UI is ful
 - Behavior must follow `PI_CONTROLLER_SPEC.md`.
 - Windows dev DB helper: `python scripts/update_svg_paths_windows.py`.
 
+## Windows-to-Pi Deploy
+- Use `scripts\touch_deploy.bat` for incremental deploy from Windows.
+- The deploy script tracks last deploy time in `scripts/.touch_deploy_state.json`.
+- First run deploys git working-tree changes by default; use `-ForceAll` for full bootstrap.
+- Deploy runs `python3 -m pip install -e .` on Pi by default, then restarts `pi-touch-controller.service`.
+- Use `-SkipPipInstall` only when you intentionally want copy/restart without dependency sync.
+
 ## System Setup (Pi)
 Backlight permissions:
 - Run `scripts/install_backlight_permissions.sh` to allow non-root brightness control.

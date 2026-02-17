@@ -1,11 +1,12 @@
 # Pi Touch Controller Handoff
 
-Date: 2026-02-15
+Date: 2026-02-17
 
 ## Current State
 - Service/runtime working on Pi (`pi-touch-controller.service`).
 - Display backend baseline is `linuxfb` via `/etc/pi-touch-controller.env`.
 - UI layout issues at `800x480` are resolved.
+- Boot console text/cursor bleed-through has been addressed in service startup flow.
 - Agent communication path is working when Windows agent is reachable on LAN.
 
 ## Stable Baseline (Reinstall / Recovery)
@@ -13,6 +14,16 @@ Date: 2026-02-15
 2. Run `./scripts/configure_display_linuxfb.sh`
 3. Restart service: `sudo systemctl restart pi-touch-controller.service`
 4. Verify: `sudo systemctl status pi-touch-controller.service --no-pager`
+5. Verify dependency import: `python3 -c "import PySide6; print('PySide6 OK')"`
+
+## Windows-to-Pi Deploy Baseline
+- Preferred command: `scripts\touch_deploy.bat`
+- Deploy behavior:
+  - incremental copy based on deploy timestamp / git changes
+  - runs `python3 -m pip install -e .` on Pi by default
+  - restarts `pi-touch-controller.service` by default
+- Full bootstrap deploy: `.\scripts\touch_deploy.ps1 -ForceAll`
+- Skip dependency install only when intentional: `.\scripts\touch_deploy.ps1 -SkipPipInstall`
 
 ## Important Runtime Notes
 - Settings text fields use an internal touch keyboard dialog (default path).

@@ -1,6 +1,6 @@
 ﻿# Pi Touch Controller - Current Status
 
-Snapshot date: 2026-02-15
+Snapshot date: 2026-02-17
 
 ## Implemented Features
 - [x] Full-screen, frameless Qt window.
@@ -52,11 +52,13 @@ Notes:
 - No visible loading indicators for slow network responses.
 - Voicemeeter action execution depends on Windows IntegrateAgent implementing those action names.
 
-## Active Blockers (2026-02-15)
+## Active Blockers (2026-02-17)
 - None currently.
 
-## Resolved Today (2026-02-15)
+## Resolved Today (2026-02-17)
 - `800x480` UI clipping/scaling regressions on Pi were fixed.
-- Framebuffer cursor artifact was fixed via display setup script.
+- Framebuffer cursor artifact and boot shell text bleed-through were fixed via service pre-start console handling.
+- Service startup loop from missing `PySide6` on Pi was identified and resolved.
+- `touch_deploy` automation now supports incremental deploy with dependency sync and service restart.
 - Windows agent communication restored by using LAN host and validating agent reachability from Pi.
 - Qt Virtual Keyboard dependence removed from default Pi path to avoid `linuxfb` split/blank rendering.

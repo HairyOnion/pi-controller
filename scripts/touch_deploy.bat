@@ -2,7 +2,7 @@
 setlocal
 
 set SCRIPT_DIR=%~dp0
-powershell -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT_DIR%deploy_ui_fix.ps1" %*
+powershell -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT_DIR%touch_deploy.ps1" %*
 set EXIT_CODE=%ERRORLEVEL%
 
 if not "%EXIT_CODE%"=="0" (

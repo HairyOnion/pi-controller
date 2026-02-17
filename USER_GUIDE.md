@@ -134,6 +134,27 @@ Restart the service:
 sudo systemctl restart pi-touch-controller.service
 ```
 
+## Windows-to-Pi Deploy (Incremental)
+From Windows, run:
+```bat
+scripts\touch_deploy.bat
+```
+
+PowerShell options:
+```powershell
+.\scripts\touch_deploy.ps1
+.\scripts\touch_deploy.ps1 -ForceAll
+.\scripts\touch_deploy.ps1 -NoServiceRestart
+.\scripts\touch_deploy.ps1 -SkipPipInstall
+```
+
+Notes:
+- Tracks last deploy timestamp in `scripts/.touch_deploy_state.json`.
+- First run defaults to git working-tree changes only.
+- Installs Python dependencies on Pi by default (`python3 -m pip install -e .`).
+- Restarts `pi-touch-controller.service` automatically by default.
+- Reboot is only attempted for reboot-required file changes and only with `-AllowReboot`.
+
 ## Database Location
 Default DB path:
 ```
@@ -155,9 +176,17 @@ PI_TC_DB=/path/to/app.db python3 -m app.data.seed
   - `chmod +x ./scripts/configure_display_linuxfb.sh`
   - `./scripts/configure_display_linuxfb.sh`
   - `sudo systemctl restart pi-touch-controller.service`
-- **Framebuffer cursor artifact**: rerun `./scripts/configure_display_linuxfb.sh` (it disables fb console cursor blinking).
+- **Framebuffer cursor artifact / shell prompt visible under UI after reboot**:
+  - `sudo cp systemd/pi-touch-controller.service /etc/systemd/system/pi-touch-controller.service`
+  - `sudo systemctl daemon-reload`
+  - `sudo systemctl restart pi-touch-controller.service`
+  - optional: rerun `./scripts/configure_display_linuxfb.sh`
+- **Service restart loop / blank screen with cursor only**:
+  - verify dependencies: `python3 -c "import PySide6; print('PySide6 OK')"`
+  - if missing, install: `python3 -m pip install -e .`
+  - restart service: `sudo systemctl restart pi-touch-controller.service`
+  - inspect logs: `sudo journalctl -u pi-touch-controller.service -n 120 --no-pager`
 
 ## Notes
 - The Pi app does not expose any remote server. It only sends outbound HTTP requests.
 - Screen layout, styling, and actions are fully data-driven via SQLite.
-

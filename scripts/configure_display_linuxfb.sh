@@ -23,8 +23,12 @@ if [[ -e /sys/class/graphics/fbcon/cursor_blink ]]; then
   echo 0 | sudo tee /sys/class/graphics/fbcon/cursor_blink >/dev/null || true
 fi
 
-if command -v setterm >/dev/null 2>&1 && [[ -e /dev/tty1 ]]; then
-  sudo sh -c 'setterm -cursor off -blank 0 -powersave off >/dev/tty1' || true
+if command -v setterm >/dev/null 2>&1; then
+  for tty in /dev/tty0 /dev/tty1 /dev/tty2 /dev/tty3; do
+    if [[ -e "$tty" ]]; then
+      sudo sh -c "TERM=linux setterm -cursor off >$tty" || true
+    fi
+  done
 fi
 
 echo "Restart the service: sudo systemctl restart pi-touch-controller.service"

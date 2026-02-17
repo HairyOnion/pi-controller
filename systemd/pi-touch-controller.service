@@ -2,11 +2,18 @@
 Description=Pi Touch Controller
 After=network-online.target
 Wants=network-online.target
+Conflicts=getty@tty1.service
 
 [Service]
 Type=simple
 User=hairyonion
 WorkingDirectory=/home/hairyonion/pi_controller
+StandardInput=null
+StandardOutput=journal
+StandardError=journal
+ExecStartPre=-/usr/bin/chvt 1
+ExecStartPre=+/bin/sh -c 'printf "\033[2J\033[H\033[?25l" >/dev/tty1'
+ExecStartPre=+/bin/sh -c 'if [ -w /sys/class/graphics/fbcon/cursor_blink ]; then echo 0 >/sys/class/graphics/fbcon/cursor_blink; fi'
 ExecStart=/usr/bin/python3 -m app.main
 Restart=always
 RestartSec=2

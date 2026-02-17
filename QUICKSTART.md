@@ -93,3 +93,26 @@ python -m app.main
 Notes:
 - The Resolution dropdown in `Settings - Agent` resizes the window (Windows dev only).
 - Main faders send live updates while dragging (throttled to 4/sec) plus a final send on release.
+
+## Windows-to-Pi Incremental Deploy
+Use the deploy helper scripts (auto-detect changes since last deploy and copy only changed files):
+
+```bat
+scripts\touch_deploy.bat
+```
+
+PowerShell form with options:
+```powershell
+.\scripts\touch_deploy.ps1
+.\scripts\touch_deploy.ps1 -ForceAll
+.\scripts\touch_deploy.ps1 -NoServiceRestart
+.\scripts\touch_deploy.ps1 -SkipPipInstall
+```
+
+Behavior:
+- Stores last deploy timestamp in `scripts/.touch_deploy_state.json`.
+- First run defaults to git working-tree changes only; use `-ForceAll` for a full bootstrap copy.
+- Runs `python3 -m pip install -e .` on the Pi by default (use `-SkipPipInstall` to disable).
+- Restarts `pi-touch-controller.service` after deploy by default.
+- Runs `daemon-reload` automatically if `systemd/pi-touch-controller.service` changed.
+- Reboots only when reboot-required files are deployed (or if explicitly allowed with `-AllowReboot`).
